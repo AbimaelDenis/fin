@@ -32,7 +32,7 @@ public class UsuarioResource {
 	
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<Usuario> findById(@PathVariable Long id){
-		return ResponseEntity.ok().body(usuarioService.findById(id));
+		return ResponseEntity.ok().body(usuarioService.procurarPorId(id).get());
 	}
 	
 	@PostMapping

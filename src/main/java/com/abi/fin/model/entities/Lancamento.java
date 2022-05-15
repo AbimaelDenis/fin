@@ -18,6 +18,7 @@ import javax.persistence.Table;
 import com.abi.fin.model.enums.StatusLancamento;
 import com.abi.fin.model.enums.TipoLancamento;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "lancamento", schema = "financas")
@@ -37,6 +38,7 @@ public class Lancamento {
 	@Column(name = "ano")
 	private Integer ano;
 	
+	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "id_usuario")
 	private Usuario usuario; 

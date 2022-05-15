@@ -26,9 +26,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 	
 	@Override
-	public Usuario findById(Long id) {
-		Optional<Usuario> usuario = usuarioRepository.findById(id);
-		return usuario.get();
+	public Optional<Usuario> procurarPorId(Long id) {
+		return usuarioRepository.findById(id);
 	}
 	
 	@Override
@@ -58,9 +57,5 @@ public class UsuarioServiceImpl implements UsuarioService {
 		if(usuarioRepository.existsByEmail(email)) {
 			throw new RegraNegocioException("Já existe um usuário cadastrado com este email.");
 		}	
-	}
-
-
-	
-	
+	}	
 }

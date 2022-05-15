@@ -4,6 +4,7 @@ package com.abi.fin.services.impl;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -89,9 +90,11 @@ public class LancamentoServiceImpl implements LancamentoService {
 		if(lancamento.getTipo() == null) {
 			throw new RegraNegocioException("Informe um tipo de Lançamento.");
 		}
-		
-		
-		
+	}
+
+	@Override
+	public Optional<Lancamento> procurarPorId(Long id) {
+		return lancamentoRepository.findById(id);
 	}
 	
 }
