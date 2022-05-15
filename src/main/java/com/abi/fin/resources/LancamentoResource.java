@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.abi.fin.api.dto.AtualizaStatusDTO;
 import com.abi.fin.api.dto.LancamentoDTO;
 import com.abi.fin.exceptions.RegraNegocioException;
 import com.abi.fin.model.entities.Lancamento;
@@ -77,6 +78,19 @@ public class LancamentoResource {
 			return new ResponseEntity(lancamentoService.atualizar(lancamento), HttpStatus.CREATED);
 		} catch (RegraNegocioException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+	
+	@PutMapping(value = "/atualiza-status/{id}")
+	public ResponseEntity atualizarStatus(@PathVariable Long id, @RequestBody AtualizaStatusDTO dto) {
+		Optional<Lancamento> lanc = lancamentoService.procurarPorId(id);
+		if(!lanc.isPresent())
+			return ResponseEntity.badRequest().body("Lançamento não encontrado para o id informado.");
+		try {
+			lanc.get().setStatus(StatusLancamento.valueOf(dto.getStatus().toUpperCase().trim()));
+			return new ResponseEntity(lancamentoService.atualizar(lanc.get()), HttpStatus.CREATED);
+		}catch(IllegalArgumentException e) {
+			return ResponseEntity.badRequest().body("Status inválido.");
 		}
 	}
 	

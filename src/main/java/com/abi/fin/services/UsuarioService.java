@@ -1,5 +1,6 @@
 package com.abi.fin.services;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,5 +17,4 @@ public interface UsuarioService {
 	void validarEmail(String email);
 	
 	Optional<Usuario> procurarPorId(Long id);
-	
 }

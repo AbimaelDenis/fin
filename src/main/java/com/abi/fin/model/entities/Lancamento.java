@@ -60,6 +60,10 @@ public class Lancamento {
 
 	public Lancamento() {}
 	
+	public Lancamento(Usuario usuario) {
+		this.usuario = usuario;
+	}
+	
 	public Long getId() {
 		return id;
 	}

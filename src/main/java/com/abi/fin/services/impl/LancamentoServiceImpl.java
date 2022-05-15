@@ -16,12 +16,13 @@ import org.springframework.stereotype.Service;
 import com.abi.fin.exceptions.RegraNegocioException;
 import com.abi.fin.model.entities.Lancamento;
 import com.abi.fin.model.enums.StatusLancamento;
+import com.abi.fin.model.enums.TipoLancamento;
 import com.abi.fin.model.repositories.LancamentoRepository;
 import com.abi.fin.services.LancamentoService;
 
 @Service
 public class LancamentoServiceImpl implements LancamentoService {
-	
+
 	@Autowired
 	private LancamentoRepository lancamentoRepository;
 
@@ -45,16 +46,14 @@ public class LancamentoServiceImpl implements LancamentoService {
 	@Transactional
 	public void deletar(Lancamento lancamento) {
 		Objects.requireNonNull(lancamento.getId());
-		lancamentoRepository.delete(lancamento);		
+		lancamentoRepository.delete(lancamento);
 	}
 
 	@Override
 	public List<Lancamento> buscar(Lancamento lancamentoFiltro) {
-		Example example = Example.of(lancamentoFiltro, ExampleMatcher.matching()
-							.withIgnoreCase()
-							.withStringMatcher(org.springframework.data.domain.ExampleMatcher.StringMatcher.CONTAINING));
-		
-		
+		Example example = Example.of(lancamentoFiltro, ExampleMatcher.matching().withIgnoreCase()
+				.withStringMatcher(org.springframework.data.domain.ExampleMatcher.StringMatcher.CONTAINING));
+
 		return lancamentoRepository.findAll(example);
 	}
 
@@ -62,32 +61,32 @@ public class LancamentoServiceImpl implements LancamentoService {
 	public void atualizarStatus(Lancamento lancamento, StatusLancamento status) {
 		lancamento.setStatus(status);
 		atualizar(lancamento);
-		
+
 	}
 
 	@Override
 	public void validar(Lancamento lancamento) {
-		if(lancamento.getDescricao() == null || lancamento.getDescricao().trim().equals("")) {
+		if (lancamento.getDescricao() == null || lancamento.getDescricao().trim().equals("")) {
 			throw new RegraNegocioException("Informe uma Descrição válida");
 		}
-		
-		if(lancamento.getMes() == null || lancamento.getMes() < 1 || lancamento.getMes() > 12) {
+
+		if (lancamento.getMes() == null || lancamento.getMes() < 1 || lancamento.getMes() > 12) {
 			throw new RegraNegocioException("Infomr um Mês válido.");
 		}
-		
-		if(lancamento.getAno() == null || lancamento.getAno().toString().length() != 4) {
+
+		if (lancamento.getAno() == null || lancamento.getAno().toString().length() != 4) {
 			throw new RegraNegocioException("Infomar um Ano válido.");
 		}
-		
-		if(lancamento.getUsuario() == null || lancamento.getUsuario().getId() == null) {
+
+		if (lancamento.getUsuario() == null || lancamento.getUsuario().getId() == null) {
 			throw new RegraNegocioException("Infomar um Usuário.");
 		}
-		
-		if(lancamento.getValor() == null || lancamento.getValor().compareTo(BigDecimal.ZERO) < 1) {
+
+		if (lancamento.getValor() == null || lancamento.getValor().compareTo(BigDecimal.ZERO) < 1) {
 			throw new RegraNegocioException("Informe um valor válido");
 		}
-		
-		if(lancamento.getTipo() == null) {
+
+		if (lancamento.getTipo() == null) {
 			throw new RegraNegocioException("Informe um tipo de Lançamento.");
 		}
 	}
@@ -96,5 +95,19 @@ public class LancamentoServiceImpl implements LancamentoService {
 	public Optional<Lancamento> procurarPorId(Long id) {
 		return lancamentoRepository.findById(id);
 	}
-	
+
+	@Override
+	@Transactional
+	public BigDecimal obterSaldoPorUsuario(Long id) {
+		BigDecimal receita = lancamentoRepository.obterSaldoPorTipoLancamentoEUsuario(id,TipoLancamento.RECEITA);
+		BigDecimal despesa = lancamentoRepository.obterSaldoPorTipoLancamentoEUsuario(id,TipoLancamento.DESPESA);
+
+		if (receita == null)
+			receita = BigDecimal.ZERO;
+		if (despesa == null)
+			despesa = BigDecimal.ZERO;
+
+		return receita.subtract(despesa);
+	}
+
 }
